@@ -13,7 +13,7 @@ namespace OOP9
 
             show.ShowQueueLength(cashBox);
 
-            for (int i = 0; i < cashBox.GetHowManyPeopl(); i++)
+            for (int i = 0; i < cashBox.CountPeople; i++)
             {
                 cashBox.InviteNps();
                 show.ShowQueueLength(cashBox);
@@ -27,7 +27,7 @@ namespace OOP9
     {
         internal void ShowQueueLength(CashBox cashBox)
         {
-            int howManyPeopl = cashBox.GetHowManyPeopl();
+            int howManyPeopl = cashBox.CountPeople;
 
             Console.WriteLine("Людей в очереди - " + howManyPeopl);
         }
@@ -55,12 +55,14 @@ namespace OOP9
 
         private Queue<NPS> _queueCheckout = new();
         private Random _random = new();
-       
+
+        internal int CountPeople => _queueCheckout.Count;
+
         internal CashBox()
         {
             GenerateQueue();
         }
-        
+
         internal void InviteNps()
         {
             Message show = new();
@@ -75,16 +77,16 @@ namespace OOP9
 
                 while (thereIsMoney)
                 {
-                    if (EnouchMoney(nps.GetMony(), nps.GetCostGoodsNps()))
+                    if (IsEnouchMoney(nps.Money, nps.GetCostGoodsNps()))
                     {
                         thereIsMoney = false;
-                        show.ShowPurchaseAtCheckout(nps.name, nps.GetCostGoodsNps(), nps.GetMony());
+                        show.ShowPurchaseAtCheckout(nps.Name, nps.GetCostGoodsNps(), nps.Money);
                         _mony += nps.GetCostGoodsNps();
                     }
                     else
                     {
                         thereIsMoney = true;
-                        show.ShowPurchaseAtCheckout(nps.name, nps.GetCostGoodsNps(), nps.GetMony());
+                        show.ShowPurchaseAtCheckout(nps.Name, nps.GetCostGoodsNps(), nps.Money);
                         Console.WriteLine("Ой у меня не достаточно денег пожалуй я, что нибудь оставлю.");
                         Console.ReadLine();
                         nps.DeleteProduсt();
@@ -96,7 +98,7 @@ namespace OOP9
             Console.WriteLine("В кассе - " + _mony + " денег");
         }
 
-        private bool EnouchMoney(int moneyNps, int costGoodsNps)
+        private bool IsEnouchMoney(int moneyNps, int costGoodsNps)
         {
             bool enouch = true;
             int difference = moneyNps - costGoodsNps;
@@ -106,11 +108,6 @@ namespace OOP9
                 enouch = false;
             }
             return enouch;
-        }
-
-        internal int GetHowManyPeopl()
-        {
-            return _queueCheckout.Count;
         }
 
         private void GenerateQueue()
@@ -141,10 +138,12 @@ namespace OOP9
 
     class NPS
     {
-        internal string name { get; private set; }
-        private int _money;
         private int _maximumInventoryCapacity;
         private List<Produсt> _inventory = new();
+
+        internal string Name { get; private set; }
+        internal int Money { get; private set; }
+
 
         public NPS()
         {
@@ -158,7 +157,7 @@ namespace OOP9
 
             for (int i = 0; i < _inventory.Count; i++)
             {
-                int difference = _money - _inventory[i].GetPrice();
+                int difference = Money - _inventory[i].Price;
 
                 if (difference < temp)
                 {
@@ -169,11 +168,6 @@ namespace OOP9
             _inventory.RemoveAt(index);
         }
 
-        internal int GetMony()
-        {
-            return _money;
-        }
-
         internal void GenerateNps()
         {
             GenerateName();
@@ -181,14 +175,14 @@ namespace OOP9
             GenerateInventoryCapacity();
             GenerateInventory();
         }
-       
+
         internal int GetCostGoodsNps()
         {
             int money = 0;
 
             foreach (Produсt item in _inventory)
             {
-                money += item.GetPrice();
+                money += item.Price;
             }
             return money;
         }
@@ -201,7 +195,7 @@ namespace OOP9
 
                 if (i != 0)
                 {
-                    if (IsThereProdukt(produkt))
+                    if (HaveProduct(produkt))
                     {
                         _inventory.Add(produkt);
                     }
@@ -213,13 +207,13 @@ namespace OOP9
             }
         }
 
-        private bool IsThereProdukt(Produсt produсt)
+        private bool HaveProduct(Produсt produсt)
         {
             bool isTherea = true;
 
             foreach (Produсt item in _inventory)
             {
-                if (item.name == produсt.name)
+                if (item.Name == produсt.Name)
                 {
                     isTherea = false;
                 }
@@ -240,30 +234,25 @@ namespace OOP9
             int maximumMoney = 8000;
             int minimumMoney = 700;
 
-            _money = RandomNumberGenerator.GetInt32(minimumMoney, maximumMoney);
+            Money = RandomNumberGenerator.GetInt32(minimumMoney, maximumMoney);
         }
 
         private void GenerateName()
         {
             string[] npsName = { "Нестер Евгения Ильинична", "Самиров Леонид Егорович", "Рязанцев Андрей Александрович", "Фунтов Юрий Геннадьевич", "Ивойлова Ксения Марселевна", "Шестунов Алексей Романович", "Ефанов Николай Алексеевич", "Петухина Алена Никитовна", "Качковский Вадим Васильевич", "Тунеева Маргарита Вадимовна", "Точилкина Анжелика Григорьевна", "Батраков Никита Павлович", "Вязмитинова Галина Яновна", "Индейкина Оксана Романовна", "Колосюк Руслан Янович", "Четков Михаил Ильич", "Хорошилова Надежда Кирилловна", "Кадулин Павел Тимурович", "Якименко Вероника Рамилевна", "Валиулин Дмитрий Данилович", "Тельпугова Евгения Артемовна", "Биушкина Татьяна Олеговна", "Славутинский Николай Игоревич", "Давыдов Александр Петрович", "Туаева Вероника Максимовна", "Мутовкина Ирина Васильевна", "Тактаров Эдуард Ринатович", "Златовратский Борис Павлович", "Недодаева Полина Аркадьевна", "Спиридонов Роман Борисович", "Лоринова Людмила Тимуровна", "Ряхин Марат Русланович", "Юльева Екатерина Ивановна", "Шуйгин Олег Максимович", "Проклов Глеб Валентинович", "Майданов Тимофей Алексеевич", "Славянинов Артур Маратович", "Таюпова Оксана Робертовна", "Коноплич Маргарита Андреевна", "Дратцева Римма Денисовна", "Гречановская Тамара Федоровна", "Петрищева Ирина Никитовна", "Шейхаметова Раиса Артуровна", "Сумцова Анжелика Геннадьевна", "Есиповская Татьяна Робертовна", "Свиногузова Кристина Ильдаровна", "Галанина Лидия Альбертовна", "Ледяева Жанна Константиновна", "Дудник Егор Радикович", "Гаянов Григорий Алексеевич" };
 
-            name = npsName[RandomNumberGenerator.GetInt32(0, npsName.Length - 1)];
+            Name = npsName[RandomNumberGenerator.GetInt32(0, npsName.Length - 1)];
         }
     }
 
     class Produсt
     {
-        internal string name { get; private set; }
-        private int _price;
+        internal string Name { get; private set; }
+        internal int Price { get; private set; }
 
         internal Produсt()
         {
             GenerateProduсt();
-        }
-        
-        internal int GetPrice()
-        {
-            return _price;
         }
 
         private void GenerateProduсt()
@@ -278,7 +267,7 @@ namespace OOP9
             string[] produсtName = {"Морковь","Свекла","Картофель","Репа","Виноград белый","Виноград черный","Чеснок","Лук репчатый",
                                     "Лук синий","Лук зеленый","Петрушка","Укроп","Орех грецкий","Редис","Свекла","Капуста белокачанная",
                                     "Капуста броколи", "Капуста пекинская","Майонез","Клубника","Горох","Фасоль"};
-            name = produсtName[RandomNumberGenerator.GetInt32(0, produсtName.Length - 1)];
+            Name = produсtName[RandomNumberGenerator.GetInt32(0, produсtName.Length - 1)];
         }
 
         private void GeneratePrice()
@@ -286,7 +275,7 @@ namespace OOP9
             int maximumPrice = 600;
             int minimumPrice = 10;
 
-            _price = RandomNumberGenerator.GetInt32(minimumPrice, maximumPrice);
+            Price = RandomNumberGenerator.GetInt32(minimumPrice, maximumPrice);
         }
     }
 }
