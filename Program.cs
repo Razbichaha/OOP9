@@ -144,7 +144,6 @@ namespace OOP9
         internal string Name { get; private set; }
         internal int Money { get; private set; }
 
-
         public NPS()
         {
             GenerateNps();
