@@ -9,30 +9,30 @@ namespace OOP9
         static void Main(string[] args)
         {
             CashBox cashBox = new();
-            Show show = new();
+            Message show = new();
 
-            show.Statistics(cashBox);
+            show.ShowQueueLength(cashBox);
 
             for (int i = 0; i < cashBox.GetHowManyPeopl(); i++)
             {
                 cashBox.InviteNps();
-                show.Statistics(cashBox);
+                show.ShowQueueLength(cashBox);
                 Console.ReadLine();
             }
             Console.ReadLine();
         }
     }
 
-    class Show
+    class Message
     {
-        internal void Statistics(CashBox cashBox)
+        internal void ShowQueueLength(CashBox cashBox)
         {
             int howManyPeopl = cashBox.GetHowManyPeopl();
 
             Console.WriteLine("Людей в очереди - " + howManyPeopl);
         }
 
-        internal void NpsThinks(string name, int costGoodsNps, int money)
+        internal void ShowPurchaseAtCheckout(string name, int costGoodsNps, int money)
         {
             Console.WriteLine(name);
             Console.WriteLine();
@@ -41,7 +41,7 @@ namespace OOP9
             Console.WriteLine();
         }
 
-        internal void BuerNumber(int number)
+        internal void ShowBuerNumber(int number)
         {
             Console.WriteLine();
             Console.Write("Покупатель №" + number + " - ");
@@ -63,31 +63,31 @@ namespace OOP9
         
         internal void InviteNps()
         {
-            Show show = new();
+            Message show = new();
             int buerNumber = 1;
 
             foreach (NPS nps in _queueCheckout)
             {
-                show.BuerNumber(buerNumber);
+                show.ShowBuerNumber(buerNumber);
                 buerNumber++;
 
                 bool thereIsMoney = true;
 
                 while (thereIsMoney)
                 {
-                    if (EnouchMoney(nps.GetMony(), nps.CostGoodsNps()))
+                    if (EnouchMoney(nps.GetMony(), nps.GetCostGoodsNps()))
                     {
                         thereIsMoney = false;
-                        show.NpsThinks(nps.GetName(), nps.CostGoodsNps(), nps.GetMony());
-                        _mony += nps.CostGoodsNps();
+                        show.ShowPurchaseAtCheckout(nps.name, nps.GetCostGoodsNps(), nps.GetMony());
+                        _mony += nps.GetCostGoodsNps();
                     }
                     else
                     {
                         thereIsMoney = true;
-                        show.NpsThinks(nps.GetName(), nps.CostGoodsNps(), nps.GetMony());
+                        show.ShowPurchaseAtCheckout(nps.name, nps.GetCostGoodsNps(), nps.GetMony());
                         Console.WriteLine("Ой у меня не достаточно денег пожалуй я, что нибудь оставлю.");
                         Console.ReadLine();
-                        nps.DeleteProdukt();
+                        nps.DeleteProduсt();
                     }
                 }
             }
@@ -141,17 +141,17 @@ namespace OOP9
 
     class NPS
     {
-        private string _name;
+        internal string name { get; private set; }
         private int _money;
         private int _maximumInventoryCapacity;
-        private List<Produkt> _inventory = new();
+        private List<Produсt> _inventory = new();
 
         public NPS()
         {
             GenerateNps();
         }
 
-        internal void DeleteProdukt()
+        internal void DeleteProduсt()
         {
             int temp = int.MaxValue;
             int index = 0;
@@ -169,11 +169,6 @@ namespace OOP9
             _inventory.RemoveAt(index);
         }
 
-        internal string GetName()
-        {
-            return _name;
-        }
-
         internal int GetMony()
         {
             return _money;
@@ -187,11 +182,11 @@ namespace OOP9
             GenerateInventory();
         }
        
-        internal int CostGoodsNps()
+        internal int GetCostGoodsNps()
         {
             int money = 0;
 
-            foreach (Produkt item in _inventory)
+            foreach (Produсt item in _inventory)
             {
                 money += item.GetPrice();
             }
@@ -202,7 +197,7 @@ namespace OOP9
         {
             for (int i = 0; i <= _maximumInventoryCapacity; i++)
             {
-                Produkt produkt = new();
+                Produсt produkt = new();
 
                 if (i != 0)
                 {
@@ -218,13 +213,13 @@ namespace OOP9
             }
         }
 
-        private bool IsThereProdukt(Produkt produkt)
+        private bool IsThereProdukt(Produсt produсt)
         {
             bool isTherea = true;
 
-            foreach (Produkt item in _inventory)
+            foreach (Produсt item in _inventory)
             {
-                if (item.GetName() == produkt.GetName())
+                if (item.name == produсt.name)
                 {
                     isTherea = false;
                 }
@@ -252,31 +247,26 @@ namespace OOP9
         {
             string[] npsName = { "Нестер Евгения Ильинична", "Самиров Леонид Егорович", "Рязанцев Андрей Александрович", "Фунтов Юрий Геннадьевич", "Ивойлова Ксения Марселевна", "Шестунов Алексей Романович", "Ефанов Николай Алексеевич", "Петухина Алена Никитовна", "Качковский Вадим Васильевич", "Тунеева Маргарита Вадимовна", "Точилкина Анжелика Григорьевна", "Батраков Никита Павлович", "Вязмитинова Галина Яновна", "Индейкина Оксана Романовна", "Колосюк Руслан Янович", "Четков Михаил Ильич", "Хорошилова Надежда Кирилловна", "Кадулин Павел Тимурович", "Якименко Вероника Рамилевна", "Валиулин Дмитрий Данилович", "Тельпугова Евгения Артемовна", "Биушкина Татьяна Олеговна", "Славутинский Николай Игоревич", "Давыдов Александр Петрович", "Туаева Вероника Максимовна", "Мутовкина Ирина Васильевна", "Тактаров Эдуард Ринатович", "Златовратский Борис Павлович", "Недодаева Полина Аркадьевна", "Спиридонов Роман Борисович", "Лоринова Людмила Тимуровна", "Ряхин Марат Русланович", "Юльева Екатерина Ивановна", "Шуйгин Олег Максимович", "Проклов Глеб Валентинович", "Майданов Тимофей Алексеевич", "Славянинов Артур Маратович", "Таюпова Оксана Робертовна", "Коноплич Маргарита Андреевна", "Дратцева Римма Денисовна", "Гречановская Тамара Федоровна", "Петрищева Ирина Никитовна", "Шейхаметова Раиса Артуровна", "Сумцова Анжелика Геннадьевна", "Есиповская Татьяна Робертовна", "Свиногузова Кристина Ильдаровна", "Галанина Лидия Альбертовна", "Ледяева Жанна Константиновна", "Дудник Егор Радикович", "Гаянов Григорий Алексеевич" };
 
-            _name = npsName[RandomNumberGenerator.GetInt32(0, npsName.Length - 1)];
+            name = npsName[RandomNumberGenerator.GetInt32(0, npsName.Length - 1)];
         }
     }
 
-    class Produkt
+    class Produсt
     {
-        private string _name;
+        internal string name { get; private set; }
         private int _price;
 
-        internal Produkt()
+        internal Produсt()
         {
-            GenerateProdukt();
+            GenerateProduсt();
         }
-
-        internal string GetName()
-        {
-            return _name;
-        }
-
+        
         internal int GetPrice()
         {
             return _price;
         }
 
-        private void GenerateProdukt()
+        private void GenerateProduсt()
         {
             GenerateName();
             GeneratePrice();
@@ -285,10 +275,10 @@ namespace OOP9
         private void GenerateName()
         {
 
-            string[] produktName = {"Морковь","Свекла","Картофель","Репа","Виноград белый","Виноград черный","Чеснок","Лук репчатый",
+            string[] produсtName = {"Морковь","Свекла","Картофель","Репа","Виноград белый","Виноград черный","Чеснок","Лук репчатый",
                                     "Лук синий","Лук зеленый","Петрушка","Укроп","Орех грецкий","Редис","Свекла","Капуста белокачанная",
                                     "Капуста броколи", "Капуста пекинская","Майонез","Клубника","Горох","Фасоль"};
-            _name = produktName[RandomNumberGenerator.GetInt32(0, produktName.Length - 1)];
+            name = produсtName[RandomNumberGenerator.GetInt32(0, produсtName.Length - 1)];
         }
 
         private void GeneratePrice()
